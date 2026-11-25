@@ -1,0 +1,35 @@
+{
+  "version": 6,
+  "configurePresets": [
+    {
+      "name": "gcc-base",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": { "CMAKE_CXX_COMPILER": "g++" }
+    },
+    { "name": "debug", "inherits": "gcc-base", "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" } },
+    { "name": "release", "inherits": "gcc-base", "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" } },
+    { "name": "asan", "inherits": "debug", "cacheVariables": { "MST_ASAN": "ON" } },
+    { "name": "ubsan", "inherits": "debug", "cacheVariables": { "MST_UBSAN": "ON" } },
+    { "name": "cpp26-full", "inherits": "debug", "cacheVariables": { "MST_FULL_CPP26": "ON" } },
+    { "name": "clang", "inherits": "debug", "cacheVariables": { "CMAKE_CXX_COMPILER": "clang++" } }
+  ],
+  "buildPresets": [
+    { "name": "debug", "configurePreset": "debug" },
+    { "name": "release", "configurePreset": "release" },
+    { "name": "asan", "configurePreset": "asan" },
+    { "name": "ubsan", "configurePreset": "ubsan" },
+    { "name": "cpp26-full", "configurePreset": "cpp26-full" },
+    { "name": "clang", "configurePreset": "clang" }
+  ],
+  "testPresets": [
+    { "name": "base", "hidden": true, "output": { "outputOnFailure": true } },
+    { "name": "debug", "inherits": "base", "configurePreset": "debug" },
+    { "name": "release", "inherits": "base", "configurePreset": "release" },
+    { "name": "asan", "inherits": "base", "configurePreset": "asan", "environment": { "ASAN_OPTIONS": "detect_leaks=1:halt_on_error=1" } },
+    { "name": "ubsan", "inherits": "base", "configurePreset": "ubsan", "environment": { "UBSAN_OPTIONS": "print_stacktrace=1:halt_on_error=1" } },
+    { "name": "cpp26-full", "inherits": "base", "configurePreset": "cpp26-full" },
+    { "name": "clang", "inherits": "base", "configurePreset": "clang" }
+  ]
+}

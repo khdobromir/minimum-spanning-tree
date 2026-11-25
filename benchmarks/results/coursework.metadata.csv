@@ -1,0 +1,16 @@
+key,value
+cpu_model,AMD Ryzen 5 7430U with Radeon Graphics
+memory_total,15736900 kB
+os,Omarchy
+kernel,Linux 7.2.15-5-omarchy x86_64
+compiler,GNU 16.2.1
+build_type,Release
+compiler_flags,-O3 -DNDEBUG
+project_version,1.0.0
+cpp26_profile,Portable
+repetitions,11
+warmups,2
+memory_limit_bytes,536870912
+exchange_limit,2000000
+start,1
+path,1 n

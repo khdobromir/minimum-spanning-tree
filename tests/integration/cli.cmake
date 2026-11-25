@@ -1,0 +1,37 @@
+function(check input expected_code pattern)
+    execute_process(COMMAND "${MST}" ${ARGN}
+        INPUT_FILE "${input}" OUTPUT_VARIABLE output ERROR_VARIABLE errors RESULT_VARIABLE code)
+    if(NOT "${code}" STREQUAL "${expected_code}" OR NOT "${output}${errors}" MATCHES "${pattern}")
+        message(FATAL_ERROR "Expected exit ${expected_code} and /${pattern}/, received ${code}: ${output}${errors}")
+    endif()
+endfunction()
+
+file(WRITE "${WORK}/eof.txt" "")
+file(WRITE "${WORK}/interactive.txt" "1\n${EXAMPLES}/chapter1.txt\nint64\n3\n\n6\n1 6\n6\n1 1\n1\n${EXAMPLES}/negative_weights.txt\nint64\n6\n0\n")
+check("${WORK}/eof.txt" 0 "mst solve" --help)
+check("${WORK}/eof.txt" 0 "1 -> 3 -> 2 -> 4 -> 5 -> 6.*Path weight: 11"
+    solve "${EXAMPLES}/chapter1.txt" --algorithm prim --start 1 --path 1 6)
+check("${WORK}/eof.txt" 0 "3-4 .*cycle" solve "${EXAMPLES}/chapter1.txt" --algorithm kruskal --trace)
+check("${WORK}/eof.txt" 0 "Both MSTs are valid.*11" compare "${EXAMPLES}/chapter1.txt" --weight-type double)
+check("${WORK}/eof.txt" 1 "disconnected" solve "${EXAMPLES}/disconnected.txt")
+check("${WORK}/eof.txt" 2 "unknown option" solve "${EXAMPLES}/chapter1.txt" --unknown)
+check("${WORK}/interactive.txt" 0 "Path weight: 11.*Path weight: 0.*Build an MST first")
+check("${WORK}/eof.txt" 0 "Generated" generate --vertices 10 --density 0.5 --seed 42 --output "${WORK}/generated.txt")
+check("${WORK}/eof.txt" 0 "Both MSTs are valid" compare "${WORK}/generated.txt")
+file(WRITE "${WORK}/bench.conf" "repetitions 2\nwarmups 1\nstart 2\npath 2 5\ncase sparse 10 15 int64 42 -10 10 mt19937\nfile \"${EXAMPLES}/chapter1.txt\" double\n")
+check("${WORK}/eof.txt" 0 "Benchmark results" benchmark --config "${WORK}/bench.conf" --output "${WORK}/out.csv")
+file(READ "${WORK}/out.csv" aggregate)
+file(READ "${WORK}/out.raw.csv" raw)
+file(READ "${WORK}/out.metadata.csv" metadata)
+if(NOT aggregate MATCHES "prim,sparse,10,15" OR NOT aggregate MATCHES "read,file,6,9"
+   OR NOT raw MATCHES "prepare,file,6,9" OR NOT metadata MATCHES "compiler" OR NOT metadata MATCHES "start,2")
+    message(FATAL_ERROR "Missing benchmark measurements or metadata")
+endif()
+
+file(READ "${WORK}/bench.conf" original_config)
+check("${WORK}/eof.txt" 1 "overlaps input"
+    benchmark --config "${WORK}/bench.conf" --output "${WORK}/bench.conf")
+file(READ "${WORK}/bench.conf" after_export)
+if(NOT original_config STREQUAL after_export)
+    message(FATAL_ERROR "Benchmark overwrote the input configuration")
+endif()

@@ -1,0 +1,2 @@
+Checks: '-*,clang-analyzer-*,bugprone-dangling-handle,bugprone-infinite-loop,bugprone-unused-return-value,performance-for-range-copy,performance-unnecessary-copy-initialization'
+HeaderFilterRegex: 'include/mst/.*'
