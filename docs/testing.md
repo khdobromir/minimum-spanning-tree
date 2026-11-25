@@ -21,8 +21,8 @@ cmake --preset ubsan && cmake --build --preset ubsan && ctest --preset ubsan
 cmake --preset clang && cmake --build --preset clang && ctest --preset clang
 cmake --preset cpp26-full && cmake --build --preset cpp26-full && ctest --preset cpp26-full
 
-rg --files include src/app src/core src/benchmark tests -g '*.hpp' -g '*.cpp' |
+rg --files include src tests -g '*.hpp' -g '*.cpp' |
   xargs clang-format --dry-run --Werror
-clang-tidy -p build/clang src/core/error.cpp src/benchmark/benchmark.cpp src/app/main.cpp \
+clang-tidy -p build/clang src/core/error.cpp src/benchmark/benchmark.cpp src/main.cpp \
   tests/unit/core.cpp tests/property/random.cpp
 ```

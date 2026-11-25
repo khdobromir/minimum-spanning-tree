@@ -24,7 +24,7 @@ target_link_options(mst_core PUBLIC ${MST_EXPERIMENTAL_LINK_FLAGS})
 add_library(mst_benchmark src/benchmark/benchmark.cpp)
 target_link_libraries(mst_benchmark PUBLIC mst_core PRIVATE mst_warnings)
 
-add_executable(mst src/app/main.cpp)
+add_executable(mst src/main.cpp)
 target_link_libraries(mst PRIVATE mst_core mst_benchmark mst_warnings)
 
 include(CTest)
